@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-TW"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;健康防詐金頭腦&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>* { box-sizing: border-box; margin: 0; padding: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body { font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif; background: #FFF8ED; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>input::placeholder { color: #C4A96A; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button:active { transform: scale(0.97); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="root"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script type="text/babel"&gt;</p>
+<p class="p1">const { useState, useEffect, useRef, useCallback } = React;</p>
+<p class="p2"><br></p>
+<p class="p1">// ════════════════════════════════════════════</p>
+<p class="p1">//<span class="Apple-converted-space">  </span>題庫</p>
+<p class="p1">// ════════════════════════════════════════════</p>
+<p class="p1">const ALL_QUESTIONS = [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"最近常覺得晚上睡不好、翻來覆去，想吃點東西幫助放鬆，請問下列哪一種作法最合適？", options:["睡前喝一大杯熱茶","補充含有 GABA 成分的食物或保健品","自己去藥局買安眠藥吃"], correct_answer:"補充含有 GABA 成分的食物或保健品", explanation:"GABA 是一種能幫助大腦放鬆、穩定情緒的營養素。濃茶含有咖啡因會讓人更清醒，安眠藥則必須由醫師看診後開立，絕對不能自己隨便買來吃喔！" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"大家都說要補充維生素 D3 來保養骨骼和幫助鈣質吸收，請問長輩用哪種方式補充最自然有效？", options:["每天正中午去大太陽下曬一小時","早上 9 點或下午 3 點，露出手臂曬太陽 10-15 分鐘","隔著家裡的玻璃窗曬太陽就有效"], correct_answer:"早上 9 點或下午 3 點，露出手臂曬太陽 10-15 分鐘", explanation:"避開烈日曬太陽 10-15 分鐘最剛好！隔著玻璃會阻擋紫外線，身體無法合成 D3；正中午曬太久反而容易中暑或曬傷喔。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"上下樓梯覺得膝蓋卡卡的，聽說現在有一種成分叫「UC-II」，它的主要作用是什麼？", options:["吃了可以長高","幫助維持關節靈活，減緩卡卡的不適感","可以讓皮膚變白"], correct_answer:"幫助維持關節靈活，減緩卡卡的不適感", explanation:"UC-II 主要針對關節保養，能幫助維持活動力。如果是為了皮膚漂亮，通常會選擇一般的膠原蛋白，兩者作用不同喔！" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"最近常覺得眼睛乾澀，或者嘴巴黏膜乾乾的，除了多喝水，還可以適度補充哪一類營養素來保養？", options:["多吃炸雞排","補充富含 Omega-7 的沙棘果油或優質魚油","每天喝三杯手搖飲料"], correct_answer:"補充富含 Omega-7 的沙棘果油或優質魚油", explanation:"好油可以幫助身體鎖水！像是 Omega-7 或魚油都能幫助滋潤保養。炸物和含糖飲料反而會讓身體更容易發炎喔。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"聽說吃「薑黃」對身體很好，請問薑黃素主要對長輩有什麼幫助呢？", options:["可以治療感冒","幫助促進新陳代謝，增強體力與調節生理機能","吃了馬上就能降血壓"], correct_answer:"幫助促進新陳代謝，增強體力與調節生理機能", explanation:"薑黃素是很棒的日常保養成分，能幫助精神變好。但它不是仙丹，不能取代降血壓藥物，有吃慢性病藥物要先問過醫生喔！" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"為了預防「肌少症」，長輩的三餐飲食中，最需要注意多補充哪一種營養？", options:["多吃白飯和麵條","多吃雞蛋、豆腐、魚肉等優質蛋白質","多吃水果"], correct_answer:"多吃雞蛋、豆腐、魚肉等優質蛋白質", explanation:"蛋白質是長肌肉的原料！白飯和水果雖然重要，但長輩往往蛋白質吃得不夠，記得每餐都要有一掌心的肉或豆腐喔。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"如果有吃降血壓藥物，絕對「不可以」跟哪一種水果一起吃，以免發生危險？", options:["蘋果","葡萄柚","香蕉"], correct_answer:"葡萄柚", explanation:"葡萄柚裡的成分會影響降血壓藥物的代謝，可能會讓血壓降得太低，非常危險！吃藥配溫開水最安全。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"長輩常覺得吃東西容易嗆到，除了細嚼慢嚥，喝水時要怎麼喝比較安全？", options:["仰起頭大口灌水","微微低頭，小口小口慢慢吞","邊看電視大笑邊喝水"], correct_answer:"微微低頭，小口小口慢慢吞", explanation:"微微低頭可以保護氣管，讓水順利流進食道。仰頭或大聲說話時喝水，很容易讓水跑進氣管引起劇烈咳嗽喔。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"在家裡量血壓，什麼時候量出來的數值最能當作醫生的參考？", options:["早上剛起床和晚上睡覺前","剛吵完架很生氣的時候","吃飽飯馬上量"], correct_answer:"早上剛起床和晚上睡覺前", explanation:"早晚在心情平靜時量血壓最準確！生氣或剛吃飽都會讓血壓暫時升高，這時候量自己嚇自己喔。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"如果要判斷家人是不是「中風」發作，有一個「微笑、舉手、說你好」測試，主要是看什麼？", options:["看他心情好不好","看臉部有沒有歪斜、單側手腳有沒有無力、說話是否大舌頭","看他有沒有發燒"], correct_answer:"看臉部有沒有歪斜、單側手腳有沒有無力、說話是否大舌頭", explanation:"這是非常重要的保命口訣！只要發現臉歪、手腳沒力或講話突然不清楚，不要猶豫，立刻打 119 叫救護車！" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"接起電話，對方說：「這裡是健保署，你的健保卡違規使用，即將被鎖卡，請按 9 轉接專人。」你該怎麼辦？", options:["趕快按 9 聽聽看怎麼回事","立刻掛斷電話，這 100% 是詐騙","照他的指示念出自己的身分證字號"], correct_answer:"立刻掛斷電話，這 100% 是詐騙", explanation:"健保署『絕對不會』主動打電話或用語音說要鎖卡，更不會要求你在電話裡按鍵轉接，接到這種電話直接掛掉就對了！" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"電話裡傳來哭聲說：「媽！我幫人作保欠錢被黑道抓走，快匯錢救我！」你該怎麼做？", options:["馬上跑去郵局匯款救人","先安撫對方，掛斷後立刻打給小孩原本的手機號碼確認，或打 165","問對方黑道在哪裡，自己拿掃把去救"], correct_answer:"先安撫對方，掛斷後立刻打給小孩原本的手機號碼確認，或打 165", explanation:"這是經典的『猜猜我是誰』詐騙！詐騙集團會用AI模仿聲音，千萬別急著匯款，一定要打給家人原本的電話確認平安。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"接到自稱網路購物客服的電話，說：「上次買東西員工按錯，變成每月自動扣款12次，請去 ATM 解除設定。」", options:["ATM 只有『扣錢』的功能，絕對沒有『解除設定』，直接掛掉","趕快去 ATM 按照他的指示按","把存摺密碼直接報給他請他幫忙解"], correct_answer:"ATM 只有『扣錢』的功能，絕對沒有『解除設定』，直接掛掉", explanation:"ATM 跟網路銀行都沒有「解除分期付款」的功能。只要聽到「去ATM解除設定」，不要懷疑，就是詐騙！" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"手機收到簡訊：「您的交通違規罰單逾期未繳，請點擊連結查詢繳費」，該不該點進去？", options:["點進去趕快用信用卡繳掉以免被罰更多","千萬不要點！政府機關不會發網址叫你馬上繳錢","轉傳給所有親友叫大家小心"], correct_answer:"千萬不要點！政府機關不會發網址叫你馬上繳錢", explanation:"這種來路不明的網址點進去，手機可能會中毒，或是騙你輸入信用卡號盜刷。有疑慮請直接拿著行照去便利商店機器查詢！" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"在 LINE 上認識一個外國軍醫，每天噓寒問暖，最近說寄了貴重包裹給你，卡在海關需要先匯幾萬塊保證金，這是？", options:["真愛降臨，趕快匯錢幫他","標準的『假交友真詐騙』，千萬別匯錢","飛去國外幫他拿包裹"], correct_answer:"標準的『假交友真詐騙』，千萬別匯錢", explanation:"從來沒見過面的人，只要一提到「錢、投資、包裹卡海關」，請立刻封鎖對方，別讓感情跟養老金都被騙走囉。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"有自稱警察的人打來說：「你的帳戶涉及洗錢案，請把存款領出來交給『法院監管帳戶』，否則要抓你去關。」", options:["警察大人說的一定對，趕快去領錢","警察跟檢察官『絕對不會』叫你交出存款，這是詐騙！","把錢藏在家裡床底下"], correct_answer:"警察跟檢察官『絕對不會』叫你交出存款，這是詐騙！", explanation:"司法機關辦案一定會寄正式紙本通知書請你去警局或地檢署，絕對不會派人去你家拿錢，更沒有所謂的「法院監管帳戶」。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"里民活動中心辦免費健康檢查，推銷員說：「阿嬤你血管阻塞很嚴重，買我們十萬塊的特效藥就會好。」", options:["健康最重要，十萬塊馬上買","這是『假健檢真推銷』，有病要去看醫生，不要買來路不明的高價藥","跟鄰居借錢來買"], correct_answer:"這是『假健檢真推銷』，有病要去看醫生，不要買來路不明的高價藥", explanation:"保健食品不能治病！很多詐騙集團會利用長輩關心健康的心理，用恐嚇的方式推銷成本極低的假藥，千萬別上當。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"朋友把你拉進 LINE 的「飆股賺錢群組」，老師說保證獲利穩賺不賠，要你下載特定APP投資，你該？", options:["退出群組並封鎖，天下沒有白吃的午餐","先投十萬塊試試水溫","把房子拿去抵押跟著老師賺"], correct_answer:"退出群組並封鎖，天下沒有白吃的午餐", explanation:"投資沒有「保證獲利」這回事。詐騙集團會先讓你在假APP裡看到賺錢，等你投大筆錢進去後，就再也領不出來了。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"便利商店說有你的「貨到付款」包裹要收 2000 元，但你最近根本沒買東西，寄件人也是看不懂的英文，你該怎麼辦？", options:["先付錢領回家拆開看看是什麼","直接拒收！這是幽靈包裹詐騙","付錢後再拿去警察局報案"], correct_answer:"直接拒收！這是幽靈包裹詐騙", explanation:"只要沒有訂購，或外觀標示不清的包裹，請勇敢跟店員說「我拒收」！一旦付了錢，要把錢追回來就非常困難了。" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ question:"久沒聯絡的朋友突然用 LINE 傳訊息說：「我的 LINE 被鎖住了，請幫我收一個簡訊驗證碼，把 6 個數字傳給我。」", options:["趕快看簡訊把 6 個數字傳給他","絕對不能傳！傳了你的 LINE 就會被盜用","問他要不要借錢"], correct_answer:"絕對不能傳！傳了你的 LINE 就會被盜用", explanation:"這是盜用 LINE 帳號的標準手法。那個 6 位數驗證碼是你自己帳號的防護鎖，只要給了別人，你的 LINE 就會被壞人搶走去騙其他親友！" },</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">const QUESTIONS_PER_GAME = 5;</p>
+<p class="p1">const TOTAL_TIME = 20;</p>
+<p class="p2"><br></p>
+<p class="p1">function shuffle(a) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const b = [...a];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for (let i = b.length - 1; i &gt; 0; i--) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const j = Math.floor(Math.random() * (i + 1));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>[b[i], b[j]] = [b[j], b[i]];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return b;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function pickQ() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return shuffle(ALL_QUESTIONS).slice(0, QUESTIONS_PER_GAME).map(q =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">    </span>q: q.question,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>opts: q.options,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ans: q.options.indexOf(q.correct_answer),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>explanation: q.explanation,</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}));</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── TTS ──</p>
+<p class="p1">function useTTS() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [speaking, setSpeaking] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const sup = "speechSynthesis" in window;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const speak = useCallback((text, rate = 0.85) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!sup) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.speechSynthesis.cancel();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const u = new SpeechSynthesisUtterance(text);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>u.lang = "zh-TW"; u.rate = rate; u.pitch = 1.05;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>u.onstart = () =&gt; setSpeaking(true);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>u.onend = () =&gt; setSpeaking(false);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>u.onerror = () =&gt; setSpeaking(false);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.speechSynthesis.speak(u);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, [sup]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const stop = useCallback(() =&gt; { if (sup) { window.speechSynthesis.cancel(); setSpeaking(false); } }, [sup]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>useEffect(() =&gt; () =&gt; { if (sup) window.speechSynthesis.cancel(); }, [sup]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return { speak, stop, speaking, supported: sup };</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ── Audio ──</p>
+<p class="p1">function useAudio() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ref = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function ctx() { if (!ref.current) ref.current = new (window.AudioContext || window.webkitAudioContext)(); return ref.current; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function beep(freq, dur, type = "sine", vol = 0.4) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const c = ctx(), o = c.createOscillator(), g = c.createGain();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>o.connect(g); g.connect(c.destination);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>o.type = type; o.frequency.value = freq;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>g.gain.setValueAtTime(vol, c.currentTime);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>o.start(c.currentTime); o.stop(c.currentTime + dur);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch (e) {}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>playCorrect: () =&gt; { beep(520,.12); setTimeout(()=&gt;beep(660,.18),110); setTimeout(()=&gt;beep(880,.25),230); },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>playWrong: <span class="Apple-converted-space">  </span>() =&gt; { beep(300,.15,"sawtooth",.35); setTimeout(()=&gt;beep(220,.25,"sawtooth",.3),140); },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>playTick:<span class="Apple-converted-space">    </span>() =&gt; beep(440,.06,"square",.15),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>playTimeout: () =&gt; beep(200,.3,"sawtooth",.35),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>playStart: <span class="Apple-converted-space">  </span>() =&gt; { beep(440,.1); setTimeout(()=&gt;beep(550,.1),100); setTimeout(()=&gt;beep(660,.2),200); },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>playFinish:<span class="Apple-converted-space">  </span>() =&gt; { [440,550,660,880].forEach((f,i)=&gt;setTimeout(()=&gt;beep(f,.18),i*100)); },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">const S = {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>page:<span class="Apple-converted-space">    </span>{ minHeight:"100vh", background:"linear-gradient(160deg,#FFF8ED 0%,#FEF3C7 100%)", display:"flex", flexDirection:"column", alignItems:"center", padding:"28px 16px" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>card:<span class="Apple-converted-space">    </span>{ background:"#fff", borderRadius:"22px", padding:"24px 20px", maxWidth:"520px", width:"100%", boxShadow:"0 6px 24px rgba(0,0,0,0.09)" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn: <span class="Apple-converted-space">    </span>(extra={}) =&gt; ({ border:"none", borderRadius:"16px", cursor:"pointer", fontWeight:"800", transition:"all 0.15s", ...extra }),</p>
+<p class="p1"><span class="Apple-converted-space">  </span>label: <span class="Apple-converted-space">  </span>{ fontSize:"22px", fontWeight:"700", color:"#78350F" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>muted: <span class="Apple-converted-space">  </span>{ fontSize:"18px", color:"#92400E", fontWeight:"600" },</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">function SpeakBtn({ text, speak, stop, speaking }) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button onClick={() =&gt; speaking ? stop() : speak(text)}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>style={S.btn({ width:46, height:46, borderRadius:"50%", background:speaking?"#FEF3C7":"#F59E0B", color:speaking?"#D97706":"#fff", fontSize:20, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:speaking?"0 0 0 3px #FCD34D":"0 2px 8px rgba(245,158,11,0.4)", flexShrink:0 })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{speaking ? "⏹" : "🔊"}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ════════════════════════════════════════════ HOME</p>
+<p class="p1">function HomePage({ onStart }) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [name, setName] = useState("");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tts = useTTS(); const audio = useAudio();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style={S.page}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ textAlign:"center", marginBottom:"24px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ fontSize:"64px" }}&gt;🧠&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1 style={{ fontSize:"36px", fontWeight:"900", color:"#D97706", margin:"6px 0 8px", letterSpacing:"2px" }}&gt;健康防詐金頭腦&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style={{ ...S.muted, marginBottom:"14px" }}&gt;動動腦、顧健康、不上當！&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{tts.supported &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onClick={() =&gt; tts.speak("歡迎來到健康防詐金頭腦！請輸入您的姓名，然後按下開始挑戰！")}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>style={S.btn({ background:"#FEF3C7", color:"#92400E", padding:"10px 22px", fontSize:"18px", border:"2px solid #F59E0B" })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>🔊 朗讀說明</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ ...S.card, marginBottom:"18px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label style={{ display:"block", ...S.label, marginBottom:"10px" }}&gt;👤 請輸入您的姓名（可選）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input value={name} onChange={e =&gt; setName(e.target.value)} placeholder="例如：王伯伯"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>style={{ width:"100%", height:"62px", fontSize:"22px", border:"2px solid #F59E0B", borderRadius:"14px", padding:"0 18px", outline:"none", color:"#78350F", background:"#FFFBF0", boxSizing:"border-box" }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ maxWidth:"520px", width:"100%", display:"grid", gridTemplateColumns:"1fr 1fr", gap:"14px", marginBottom:"18px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{[["🏥","健康保養知識","學正確的養生方法"],["🚨","生活防詐實戰","識破常見詐騙手法"]].map(([icon,title,sub],i) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div key={i} style={{ background:"#fff", borderRadius:"18px", padding:"18px 14px", textAlign:"center", boxShadow:"0 3px 14px rgba(0,0,0,0.08)", border:"2px solid #FCD34D" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ fontSize:"38px", marginBottom:"6px" }}&gt;{icon}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ fontSize:"18px", fontWeight:"800", color:"#78350F", marginBottom:"4px" }}&gt;{title}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ fontSize:"14px", color:"#92400E", fontWeight:"600" }}&gt;{sub}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ maxWidth:"520px", width:"100%", background:"#FEF3C7", borderRadius:"14px", padding:"13px 18px", marginBottom:"20px", display:"flex", justifyContent:"space-around", flexWrap:"wrap", gap:"6px", ...S.muted }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;🎯 每次 {QUESTIONS_PER_GAME} 題&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;🔀 隨機抽題&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;⏱️ 每題 {TOTAL_TIME} 秒&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ maxWidth:"520px", width:"100%" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onClick={() =&gt; { tts.stop(); audio.playStart(); onStart(name); }}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>style={S.btn({ width:"100%", height:"72px", background:"linear-gradient(135deg,#F59E0B,#EF4444)", color:"#fff", fontSize:"28px", letterSpacing:"2px", boxShadow:"0 6px 20px rgba(245,158,11,0.45)" })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>✨ 開始挑戰！</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style={{ textAlign:"center", fontSize:"17px", color:"#A78BFA", marginTop:"14px", fontWeight:"600" }}&gt;🌟 每次題目不同，挑戰自己每天進步！&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ════════════════════════════════════════════ QUIZ</p>
+<p class="p1">function QuizPage({ name, questions, onFinish }) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [qIdx, setQIdx] = useState(0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [selected, setSelected] = useState(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [confirmed, setConfirmed] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const scoresRef = useRef([]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const timerRef = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const confirmedRef = useRef(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tts = useTTS(); const audio = useAudio();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cur = questions[qIdx];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>useEffect(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>confirmedRef.current = false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setSelected(null); setConfirmed(false); setTimeLeft(TOTAL_TIME);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const opts = cur.opts.map((o,i) =&gt; `${String.fromCharCode(65+i)}，${o}`).join("。");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; tts.speak(`第${qIdx+1}題。${cur.q}　選項：${opts}`), 300);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, [qIdx]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>useEffect(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (confirmed) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>timerRef.current = setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setTimeLeft(t =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (t &lt;= 4 &amp;&amp; t &gt; 1) audio.playTick();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (t &lt;= 1) { clearInterval(timerRef.current); if (!confirmedRef.current) doConfirm(null, true); return 0; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return t - 1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}, 1000);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return () =&gt; clearInterval(timerRef.current);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, [qIdx, confirmed]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function doConfirm(sel, timeout = false) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (confirmedRef.current) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>confirmedRef.current = true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>clearInterval(timerRef.current); tts.stop();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const ok = sel === cur.ans;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>scoresRef.current = [...scoresRef.current, ok];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setSelected(sel); setConfirmed(true);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (timeout) { audio.playTimeout(); setTimeout(() =&gt; tts.speak(`時間到！正確答案是：${cur.opts[cur.ans]}。${cur.explanation}`), 300); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>else if (ok) { audio.playCorrect(); setTimeout(() =&gt; tts.speak(`答對了！太棒了！${cur.explanation}`), 200); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>else { audio.playWrong(); setTimeout(() =&gt; tts.speak(`這次差一點！正確答案是：${cur.opts[cur.ans]}。${cur.explanation}`), 200); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function handleNext() {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tts.stop();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (qIdx + 1 &gt;= questions.length) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>audio.playFinish();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const s = scoresRef.current;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setTimeout(() =&gt; tts.speak(`恭喜完成！您答對了${s.filter(Boolean).length}題，共${s.length}題。`), 400);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>onFinish(s);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else { setQIdx(q =&gt; q + 1); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function optBg(i) { if (!confirmed) return selected===i?"#FEF3C7":"#fff"; if (i===cur.ans) return "#D1FAE5"; if (i===selected) return "#FEE2E2"; return "#F9FAFB"; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function optBorder(i) { if (!confirmed) return selected===i?"3px solid #F59E0B":"2px solid #FCD34D"; if (i===cur.ans) return "3px solid #10B981"; if (i===selected) return "3px solid #EF4444"; return "2px solid #E5E7EB"; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function optIcon(i) { if (!confirmed) return null; if (i===cur.ans) return "✅"; if (i===selected&amp;&amp;selected!==cur.ans) return "❌"; return null; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tc = timeLeft&gt;10?"#10B981":timeLeft&gt;5?"#F59E0B":"#EF4444";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const fullText = `第${qIdx+1}題。${cur.q}　選項：${cur.opts.map((o,i)=&gt;`${String.fromCharCode(65+i)}，${o}`).join("。")}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style={S.page}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ maxWidth:"540px", width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"12px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ fontSize:"19px", fontWeight:"800", color:"#D97706" }}&gt;🧠 健康防詐金頭腦&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ fontSize:"19px", fontWeight:"700", color:"#92400E", background:"#FEF3C7", borderRadius:"12px", padding:"6px 14px" }}&gt;第 {qIdx+1} / {questions.length} 題&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ maxWidth:"540px", width:"100%", height:"13px", background:"#FDE68A", borderRadius:"99px", marginBottom:"14px", overflow:"hidden" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ height:"100%", width:`${(qIdx/questions.length)*100}%`, background:"linear-gradient(90deg,#F59E0B,#EF4444)", borderRadius:"99px", transition:"width 0.4s" }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ ...S.card, marginBottom:"12px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"14px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ width:"56px", height:"56px", borderRadius:"50%", background:"#FEF3C7", border:`4px solid ${tc}`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ fontSize:"21px", fontWeight:"900", color:tc, lineHeight:1 }}&gt;{timeLeft}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ fontSize:"11px", color:"#92400E", fontWeight:"600" }}&gt;秒&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>{tts.supported &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ display:"flex", alignItems:"center", gap:"8px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span style={{ fontSize:"16px", color:"#92400E", fontWeight:"600" }}&gt;再聽一次&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;SpeakBtn text={fullText} speak={tts.speak} stop={tts.stop} speaking={tts.speaking} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{name &amp;&amp; &lt;p style={{ fontSize:"17px", color:"#A78BFA", fontWeight:"600", marginBottom:"6px" }}&gt;👤 {name}，加油！&lt;/p&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style={{ fontSize:"22px", fontWeight:"800", color:"#78350F", lineHeight:"1.65" }}&gt;{qIdx+1}. {cur.q}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ maxWidth:"540px", width:"100%", display:"flex", flexDirection:"column", gap:"10px", marginBottom:"12px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{cur.opts.map((opt,i) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button key={i} onClick={() =&gt; { if (!confirmed) { setSelected(i); tts.speak(opt, 0.9); } }}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>style={S.btn({ width:"100%", minHeight:"66px", background:optBg(i), border:optBorder(i), fontSize:"20px", color:"#78350F", padding:"12px 18px", textAlign:"left", display:"flex", alignItems:"center", gap:"12px", cursor:confirmed?"default":"pointer", boxShadow:selected===i&amp;&amp;!confirmed?"0 4px 14px rgba(245,158,11,0.30)":"0 2px 8px rgba(0,0,0,0.06)" })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ width:"34px", height:"34px", borderRadius:"50%", background:selected===i&amp;&amp;!confirmed?"#F59E0B":"#FEF3C7", color:selected===i&amp;&amp;!confirmed?"#fff":"#D97706", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"900", fontSize:"17px", flexShrink:0 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{String.fromCharCode(65+i)}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ flex:1 }}&gt;{opt}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{optIcon(i) &amp;&amp; &lt;span style={{ fontSize:"22px" }}&gt;{optIcon(i)}&lt;/span&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{!confirmed ? (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ maxWidth:"540px", width:"100%" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onClick={() =&gt; selected !== null &amp;&amp; doConfirm(selected)} disabled={selected===null}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>style={S.btn({ width:"100%", height:"66px", background:selected!==null?"linear-gradient(135deg,#F59E0B,#EF4444)":"#D1D5DB", color:"#fff", fontSize:"23px", cursor:selected!==null?"pointer":"not-allowed", boxShadow:selected!==null?"0 6px 18px rgba(245,158,11,0.40)":"none" })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{selected !== null ? "✅ 確認答案" : "請選擇一個答案"}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>) : (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ maxWidth:"540px", width:"100%", display:"flex", flexDirection:"column", gap:"10px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ background:selected===cur.ans?"#D1FAE5":"#FEE2E2", borderRadius:"16px", padding:"14px 18px", fontSize:"21px", fontWeight:"800", color:selected===cur.ans?"#065F46":"#991B1B", textAlign:"center" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{selected===cur.ans ? "🎉 答對了！太棒了！" : selected===null ? `⏰ 時間到！正確答案是「${cur.opts[cur.ans]}」` : `😊 差一點！正確答案是「${cur.opts[cur.ans]}」`}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ background:"linear-gradient(135deg,#FFFBEB,#FEF3C7)", border:"2px solid #F59E0B", borderRadius:"18px", padding:"16px 18px", display:"flex", gap:"12px", alignItems:"flex-start" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ fontSize:"28px", flexShrink:0 }}&gt;💡&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ flex:1 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;p style={{ fontSize:"16px", fontWeight:"800", color:"#D97706", marginBottom:"6px" }}&gt;溫馨小提醒&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;p style={{ fontSize:"19px", color:"#78350F", fontWeight:"600", lineHeight:"1.7" }}&gt;{cur.explanation}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{tts.supported &amp;&amp; &lt;SpeakBtn text={cur.explanation} speak={tts.speak} stop={tts.stop} speaking={tts.speaking} /&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onClick={handleNext}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>style={S.btn({ width:"100%", height:"66px", background:"linear-gradient(135deg,#F59E0B,#FBBF24)", color:"#fff", fontSize:"23px", boxShadow:"0 6px 18px rgba(245,158,11,0.40)" })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{qIdx+1 &gt;= questions.length ? "🏆 看最終成績！" : "下一題 →"}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ════════════════════════════════════════════ RESULT</p>
+<p class="p1">function ResultPage({ name, scores, onRestart }) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const correct = scores.filter(Boolean).length;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const total = scores.length;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pct = Math.round((correct / total) * 100);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const grade = pct &gt;= 80</p>
+<p class="p1"><span class="Apple-converted-space">    </span>? { label:"超級厲害！", icon:"🏆", color:"#D97706", msg:"您的健康防詐知識非常豐富，請繼續保持！" }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>: pct &gt;= 60</p>
+<p class="p1"><span class="Apple-converted-space">    </span>? { label:"答得不錯！", icon:"🌟", color:"#059669", msg:"再多練習幾次，您會更厲害的！" }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>: { label:"繼續加油！", icon:"💪", color:"#7C3AED", msg:"別氣餒，多玩幾次就會越來越熟悉！" };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tts = useTTS();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>useEffect(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tts.speak(`${name?name+"，":""}您答對了${correct}題，共${total}題，答對率${pct}%。${grade.label}${grade.msg}`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, []);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style={{ ...S.page, justifyContent:"center" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ ...S.card, maxWidth:"500px", textAlign:"center" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ fontSize:"76px", marginBottom:"10px" }}&gt;{grade.icon}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 style={{ fontSize:"32px", fontWeight:"900", color:grade.color, marginBottom:"6px" }}&gt;{grade.label}&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{name &amp;&amp; &lt;p style={{ fontSize:"22px", color:"#78350F", fontWeight:"700", marginBottom:"4px" }}&gt;{name}，辛苦了！&lt;/p&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style={{ ...S.muted, marginBottom:"22px" }}&gt;{grade.msg}&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ background:"linear-gradient(135deg,#FEF3C7,#FDE68A)", borderRadius:"22px", padding:"22px", marginBottom:"20px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;p style={{ ...S.muted, marginBottom:"8px" }}&gt;🧠 健康防詐金頭腦&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;p style={{ fontSize:"56px", fontWeight:"900", color:"#D97706", lineHeight:1, marginBottom:"4px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{correct} &lt;span style={{ fontSize:"26px" }}&gt;/ {total}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;p style={{ fontSize:"24px", color:"#92400E", fontWeight:"700", marginBottom:"14px" }}&gt;答對率 {pct}%&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ display:"flex", justifyContent:"center", gap:"10px", flexWrap:"wrap", marginBottom:"14px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{scores.map((ok,i) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div key={i} style={{ width:"42px", height:"42px", borderRadius:"50%", background:ok?"#D1FAE5":"#FEE2E2", border:`3px solid ${ok?"#10B981":"#EF4444"}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"18px", fontWeight:"900", color:ok?"#065F46":"#991B1B" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ok?"✓":"✗"}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>{tts.supported &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onClick={() =&gt; tts.speak(`您答對了${correct}題，答對率${pct}%，${grade.label}`)}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>style={S.btn({ background:"#F59E0B", color:"#fff", padding:"10px 22px", fontSize:"17px" })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>🔊 再聽一次成績</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ display:"flex", flexDirection:"column", gap:"12px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onClick={() =&gt; { tts.stop(); onRestart(true); }}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>style={S.btn({ width:"100%", height:"68px", background:"linear-gradient(135deg,#F59E0B,#EF4444)", color:"#fff", fontSize:"22px", boxShadow:"0 6px 20px rgba(245,158,11,0.40)" })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>🔀 再玩一次（重新抽題）</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onClick={() =&gt; { tts.stop(); onRestart(false); }}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>style={S.btn({ width:"100%", height:"62px", background:"#FEF3C7", color:"#92400E", border:"2px solid #F59E0B", fontSize:"21px" })}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>🏠 回到首頁</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// ════════════════════════════════════════════ ROOT</p>
+<p class="p1">function App() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [page, setPage] = useState("home");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [playerName, setPlayerName] = useState("");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [questions, setQuestions] = useState([]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [finalScores, setFinalScores] = useState([]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function handleStart(name) { setPlayerName(name); setQuestions(pickQ()); setPage("quiz"); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function handleFinish(s) { setFinalScores(s); setPage("result"); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function handleRestart(same) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (same) { setQuestions(pickQ()); setFinalScores([]); setPage("quiz"); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>else setPage("home");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (page === "home") return &lt;HomePage onStart={handleStart} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (page === "quiz") return &lt;QuizPage name={playerName} questions={questions} onFinish={handleFinish} /&gt;;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return &lt;ResultPage name={playerName} scores={finalScores} onRestart={handleRestart} /&gt;;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">ReactDOM.createRoot(document.getElementById("root")).render(&lt;App /&gt;);</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
