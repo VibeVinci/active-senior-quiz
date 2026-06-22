@@ -21,33 +21,99 @@
 const { useState, useEffect, useRef, useCallback } = React;
 
 // ════════════════════════════════════════════
-//  題庫
+//  題庫（12 組主題、共 53 題）
 // ════════════════════════════════════════════
-const ALL_QUESTIONS = [
-  { question:"最近常覺得晚上睡不好、翻來覆去，想吃點東西幫助放鬆，請問下列哪一種作法最合適？", options:["睡前喝一大杯熱茶","補充含有 GABA 成分的食物或保健品","自己去藥局買安眠藥吃"], correct_answer:"補充含有 GABA 成分的食物或保健品", explanation:"GABA 是一種能幫助大腦放鬆、穩定情緒的營養素。濃茶含有咖啡因會讓人更清醒，安眠藥則必須由醫師看診後開立，絕對不能自己隨便買來吃喔！" },
-  { question:"大家都說要補充維生素 D3 來保養骨骼和幫助鈣質吸收，請問長輩用哪種方式補充最自然有效？", options:["每天正中午去大太陽下曬一小時","早上 9 點或下午 3 點，露出手臂曬太陽 10-15 分鐘","隔著家裡的玻璃窗曬太陽就有效"], correct_answer:"早上 9 點或下午 3 點，露出手臂曬太陽 10-15 分鐘", explanation:"避開烈日曬太陽 10-15 分鐘最剛好！隔著玻璃會阻擋紫外線，身體無法合成 D3；正中午曬太久反而容易中暑或曬傷喔。" },
-  { question:"上下樓梯覺得膝蓋卡卡的，聽說現在有一種成分叫「UC-II」，它的主要作用是什麼？", options:["吃了可以長高","幫助維持關節靈活，減緩卡卡的不適感","可以讓皮膚變白"], correct_answer:"幫助維持關節靈活，減緩卡卡的不適感", explanation:"UC-II 主要針對關節保養，能幫助維持活動力。如果是為了皮膚漂亮，通常會選擇一般的膠原蛋白，兩者作用不同喔！" },
-  { question:"最近常覺得眼睛乾澀，或者嘴巴黏膜乾乾的，除了多喝水，還可以適度補充哪一類營養素來保養？", options:["多吃炸雞排","補充富含 Omega-7 的沙棘果油或優質魚油","每天喝三杯手搖飲料"], correct_answer:"補充富含 Omega-7 的沙棘果油或優質魚油", explanation:"好油可以幫助身體鎖水！像是 Omega-7 或魚油都能幫助滋潤保養。炸物和含糖飲料反而會讓身體更容易發炎喔。" },
-  { question:"聽說吃「薑黃」對身體很好，請問薑黃素主要對長輩有什麼幫助呢？", options:["可以治療感冒","幫助促進新陳代謝，增強體力與調節生理機能","吃了馬上就能降血壓"], correct_answer:"幫助促進新陳代謝，增強體力與調節生理機能", explanation:"薑黃素是很棒的日常保養成分，能幫助精神變好。但它不是仙丹，不能取代降血壓藥物，有吃慢性病藥物要先問過醫生喔！" },
-  { question:"為了預防「肌少症」，長輩的三餐飲食中，最需要注意多補充哪一種營養？", options:["多吃白飯和麵條","多吃雞蛋、豆腐、魚肉等優質蛋白質","多吃水果"], correct_answer:"多吃雞蛋、豆腐、魚肉等優質蛋白質", explanation:"蛋白質是長肌肉的原料！白飯和水果雖然重要，但長輩往往蛋白質吃得不夠，記得每餐都要有一掌心的肉或豆腐喔。" },
-  { question:"如果有吃降血壓藥物，絕對「不可以」跟哪一種水果一起吃，以免發生危險？", options:["蘋果","葡萄柚","香蕉"], correct_answer:"葡萄柚", explanation:"葡萄柚裡的成分會影響降血壓藥物的代謝，可能會讓血壓降得太低，非常危險！吃藥配溫開水最安全。" },
-  { question:"長輩常覺得吃東西容易嗆到，除了細嚼慢嚥，喝水時要怎麼喝比較安全？", options:["仰起頭大口灌水","微微低頭，小口小口慢慢吞","邊看電視大笑邊喝水"], correct_answer:"微微低頭，小口小口慢慢吞", explanation:"微微低頭可以保護氣管，讓水順利流進食道。仰頭或大聲說話時喝水，很容易讓水跑進氣管引起劇烈咳嗽喔。" },
-  { question:"在家裡量血壓，什麼時候量出來的數值最能當作醫生的參考？", options:["早上剛起床和晚上睡覺前","剛吵完架很生氣的時候","吃飽飯馬上量"], correct_answer:"早上剛起床和晚上睡覺前", explanation:"早晚在心情平靜時量血壓最準確！生氣或剛吃飽都會讓血壓暫時升高，這時候量自己嚇自己喔。" },
-  { question:"如果要判斷家人是不是「中風」發作，有一個「微笑、舉手、說你好」測試，主要是看什麼？", options:["看他心情好不好","看臉部有沒有歪斜、單側手腳有沒有無力、說話是否大舌頭","看他有沒有發燒"], correct_answer:"看臉部有沒有歪斜、單側手腳有沒有無力、說話是否大舌頭", explanation:"這是非常重要的保命口訣！只要發現臉歪、手腳沒力或講話突然不清楚，不要猶豫，立刻打 119 叫救護車！" },
-  { question:"接起電話，對方說：「這裡是健保署，你的健保卡違規使用，即將被鎖卡，請按 9 轉接專人。」你該怎麼辦？", options:["趕快按 9 聽聽看怎麼回事","立刻掛斷電話，這 100% 是詐騙","照他的指示念出自己的身分證字號"], correct_answer:"立刻掛斷電話，這 100% 是詐騙", explanation:"健保署『絕對不會』主動打電話或用語音說要鎖卡，更不會要求你在電話裡按鍵轉接，接到這種電話直接掛掉就對了！" },
-  { question:"電話裡傳來哭聲說：「媽！我幫人作保欠錢被黑道抓走，快匯錢救我！」你該怎麼做？", options:["馬上跑去郵局匯款救人","先安撫對方，掛斷後立刻打給小孩原本的手機號碼確認，或打 165","問對方黑道在哪裡，自己拿掃把去救"], correct_answer:"先安撫對方，掛斷後立刻打給小孩原本的手機號碼確認，或打 165", explanation:"這是經典的『猜猜我是誰』詐騙！詐騙集團會用AI模仿聲音，千萬別急著匯款，一定要打給家人原本的電話確認平安。" },
-  { question:"接到自稱網路購物客服的電話，說：「上次買東西員工按錯，變成每月自動扣款12次，請去 ATM 解除設定。」", options:["ATM 只有『扣錢』的功能，絕對沒有『解除設定』，直接掛掉","趕快去 ATM 按照他的指示按","把存摺密碼直接報給他請他幫忙解"], correct_answer:"ATM 只有『扣錢』的功能，絕對沒有『解除設定』，直接掛掉", explanation:"ATM 跟網路銀行都沒有「解除分期付款」的功能。只要聽到「去ATM解除設定」，不要懷疑，就是詐騙！" },
-  { question:"手機收到簡訊：「您的交通違規罰單逾期未繳，請點擊連結查詢繳費」，該不該點進去？", options:["點進去趕快用信用卡繳掉以免被罰更多","千萬不要點！政府機關不會發網址叫你馬上繳錢","轉傳給所有親友叫大家小心"], correct_answer:"千萬不要點！政府機關不會發網址叫你馬上繳錢", explanation:"這種來路不明的網址點進去，手機可能會中毒，或是騙你輸入信用卡號盜刷。有疑慮請直接拿著行照去便利商店機器查詢！" },
-  { question:"在 LINE 上認識一個外國軍醫，每天噓寒問暖，最近說寄了貴重包裹給你，卡在海關需要先匯幾萬塊保證金，這是？", options:["真愛降臨，趕快匯錢幫他","標準的『假交友真詐騙』，千萬別匯錢","飛去國外幫他拿包裹"], correct_answer:"標準的『假交友真詐騙』，千萬別匯錢", explanation:"從來沒見過面的人，只要一提到「錢、投資、包裹卡海關」，請立刻封鎖對方，別讓感情跟養老金都被騙走囉。" },
-  { question:"有自稱警察的人打來說：「你的帳戶涉及洗錢案，請把存款領出來交給『法院監管帳戶』，否則要抓你去關。」", options:["警察大人說的一定對，趕快去領錢","警察跟檢察官『絕對不會』叫你交出存款，這是詐騙！","把錢藏在家裡床底下"], correct_answer:"警察跟檢察官『絕對不會』叫你交出存款，這是詐騙！", explanation:"司法機關辦案一定會寄正式紙本通知書請你去警局或地檢署，絕對不會派人去你家拿錢，更沒有所謂的「法院監管帳戶」。" },
-  { question:"里民活動中心辦免費健康檢查，推銷員說：「阿嬤你血管阻塞很嚴重，買我們十萬塊的特效藥就會好。」", options:["健康最重要，十萬塊馬上買","這是『假健檢真推銷』，有病要去看醫生，不要買來路不明的高價藥","跟鄰居借錢來買"], correct_answer:"這是『假健檢真推銷』，有病要去看醫生，不要買來路不明的高價藥", explanation:"保健食品不能治病！很多詐騙集團會利用長輩關心健康的心理，用恐嚇的方式推銷成本極低的假藥，千萬別上當。" },
-  { question:"朋友把你拉進 LINE 的「飆股賺錢群組」，老師說保證獲利穩賺不賠，要你下載特定APP投資，你該？", options:["退出群組並封鎖，天下沒有白吃的午餐","先投十萬塊試試水溫","把房子拿去抵押跟著老師賺"], correct_answer:"退出群組並封鎖，天下沒有白吃的午餐", explanation:"投資沒有「保證獲利」這回事。詐騙集團會先讓你在假APP裡看到賺錢，等你投大筆錢進去後，就再也領不出來了。" },
-  { question:"便利商店說有你的「貨到付款」包裹要收 2000 元，但你最近根本沒買東西，寄件人也是看不懂的英文，你該怎麼辦？", options:["先付錢領回家拆開看看是什麼","直接拒收！這是幽靈包裹詐騙","付錢後再拿去警察局報案"], correct_answer:"直接拒收！這是幽靈包裹詐騙", explanation:"只要沒有訂購，或外觀標示不清的包裹，請勇敢跟店員說「我拒收」！一旦付了錢，要把錢追回來就非常困難了。" },
-  { question:"久沒聯絡的朋友突然用 LINE 傳訊息說：「我的 LINE 被鎖住了，請幫我收一個簡訊驗證碼，把 6 個數字傳給我。」", options:["趕快看簡訊把 6 個數字傳給他","絕對不能傳！傳了你的 LINE 就會被盜用","問他要不要借錢"], correct_answer:"絕對不能傳！傳了你的 LINE 就會被盜用", explanation:"這是盜用 LINE 帳號的標準手法。那個 6 位數驗證碼是你自己帳號的防護鎖，只要給了別人，你的 LINE 就會被壞人搶走去騙其他親友！" },
+const QUIZ_SETS = [
+  { quizTitle:"高齡反詐騙宣導（假檢警、假投資與猜猜我是誰）", category:"防範詐騙", questions:[
+    { question:"林阿姨接到自稱是檢察官的電話，說她涉嫌洗錢，要把存摺和密碼交出來「監管資金」，不然會被警察抓走。這時候林阿姨該怎麼辦？", options:["趕快照著對方的指示，把存摺和密碼交給他保管","這是詐騙！警察和檢察官絕對不會用電話要求「監管資金」","趕快去銀行把錢全部提領出來，藏在自家的床底下"], correct_answer:"這是詐騙！警察和檢察官絕對不會用電話要求「監管資金」", explanation:"溫馨提醒：阿姨別慌張！真的警察或檢察官絕對不會用電話辦案，更不會叫您交出存摺、密碼或把錢拿給別人保管。遇到這種電話，直接掛掉就對了！" },
+    { question:"陳伯伯接到一通電話，對方叫一聲「爸爸」，說自己換了新手機號碼，現在因為急事需要借十萬元周轉，陳伯伯該怎麼做？", options:["聽聲音很像自己的兒子，二話不說趕快跑去銀行匯款","先把電話掛斷，用以前舊的電話號碼打給兒子親自確認","跟對方說家裡沒錢，但把鄰居的手機號碼給對方去借錢"], correct_answer:"先把電話掛斷，用以前舊的電話號碼打給兒子親自確認", explanation:"安心叮嚀：伯伯，接到自稱是親戚、孩子說換新號碼要借錢的電話，一定要先掛斷，用原來的舊電話打回去確認，才不會把辛苦錢送給騙子喔！" },
+    { question:"王大安在手機通訊軟體裡，看到有人介紹「穩賺不賠、保證獲利」的投資機會，還叫他私下把錢匯到一個個人帳戶，這可能是什麼情況？", options:["這是很難得的賺錢好機會，要趕快把養老金全部投進去","這是詐騙集團的陷阱，千萬不能相信和匯款","先匯款一小筆資金試試看，如果有賺錢再匯更多"], correct_answer:"這是詐騙集團的陷阱，千萬不能相信和匯款", explanation:"溫馨提醒：世界上沒有「穩賺不賠」或「零風險」的投資。只要叫您私下匯款到個人帳戶的，百分之百都是騙人的陷阱，千萬不要相信喔！" },
+    { question:"張阿姨接到一通自稱是郵局的電話，覺得內容怪怪的，這時候她應該怎麼做最安全？", options:["照著對方的指示到ATM提款機前操作，確認帳戶餘額","牢記「一聽、二掛、三查證」，馬上掛斷電話並撥打165反詐騙專線詢問","一直跟對方講電話，順便聊天打發時間"], correct_answer:"牢記「一聽、二掛、三查證」，馬上掛斷電話並撥打165反詐騙專線詢問", explanation:"安心叮嚀：阿姨做得好！遇到可疑電話，最要緊的就是「趕快掛斷」，然後撥打165專線，或是找當地的里長和派出所幫忙，這樣最安全喔！" },
+  ]},
+  { quizTitle:"食物安全", category:"營養健康", questions:[
+    { question:"林阿姨中午煮了熱騰騰的排骨湯，吃不完要放冰箱，什麼時候放進去最好呢？", options:["摸起來還溫溫熱熱（大約50到60度）就趕快放","放到完全涼透、跟室外溫度一樣再放","直接放在餐桌上，等到隔天要吃再放"], correct_answer:"摸起來還溫溫熱熱（大約50到60度）就趕快放", explanation:"溫馨提醒：阿姨，現在的冰箱功能很好，食物摸起來還溫熱的時候趕快放進冰箱，才不會給壞細菌有機會在裡面一直住下來喔！" },
+    { question:"陳伯伯覺得吃不完的菜，只要「高溫加熱滾過」就絕對安全，這個想法對嗎？", options:["不對，因為有些細菌產生的毒素很耐熱，高溫煮過也沒辦法消滅","對，只要有開火加熱，所有的細菌和毒素都會立刻死光光","對，只要煮到滾，放了三天的隔夜菜吃起來都很安全"], correct_answer:"不對，因為有些細菌產生的毒素很耐熱，高溫煮過也沒辦法消滅", explanation:"溫馨提醒：伯伯，有些細菌產生的毒素是「不怕熱」的，就算再加熱也沒用。所以食物吃不完要趕快冰，不要讓它有機會產生毒素喔！" },
+    { question:"夏天天氣好熱（室溫超過32度），煮好的飯菜放在桌上，最多可以放多久就一定要冰起來？", options:["最多只能放1個小時","可以放滿3個小時","放一整天到晚上都沒關係"], correct_answer:"最多只能放1個小時", explanation:"溫馨提醒：夏天天氣熱，細菌生長得特別快！煮好的菜如果1個小時內沒吃完，就要趕快放進冰箱，這樣吃起來才安心喔！" },
+    { question:"以前媽媽常說「熱菜直接放冰箱，冰箱和菜都會壞」，為什麼現在醫生說熱熱的就能放冰箱呢？", options:["因為現在的冰箱降溫能力很好，熱菜放進去能快速冷卻，不怕細菌滋生","因為現在的蔬菜比較不怕熱，熱熱的冰也不會爛掉","因為現在的冰箱裡面有裝殺菌燈，可以把所有熱菜的細菌殺光"], correct_answer:"因為現在的冰箱降溫能力很好，熱菜放進去能快速冷卻，不怕細菌滋生", explanation:"安心叮嚀：以前的冰箱比較不夠力，才會要我們放涼再冰。現在的冰箱很厲害，熱熱的放進去能趕快變冷，反而更能保護食物不壞掉喔！" },
+    { question:"醫生提到，細菌在幾度到幾度之間會生長得最快，是我們最需要小心的「危險溫度」？", options:["0度以下","7度到60度之間","80度到100度之間"], correct_answer:"7度到60度之間", explanation:"溫馨提醒：沒錯！7度到60度是細菌最喜歡生長的溫度，所以食物要嘛就要熱熱的吃，要嘛就要趕快冰到冰箱，才能避開這個危險溫度喔！" },
+  ]},
+  { quizTitle:"皮蛇預防", category:"營養健康", questions:[
+    { question:"林阿姨發現自己身上長了皮蛇（帶狀皰疹），還起了不少小水泡，這時候她該怎麼照顧比較好？", options:["穿寬鬆的衣服，千萬不要自己去戳破水泡或亂塗草藥膏","趕快拿針把水泡全部戳破，再塗上萬金油或小護士","用熱水用力刷洗傷口，把毒素洗出來"], correct_answer:"穿寬鬆的衣服，千萬不要自己去戳破水泡或亂塗草藥膏", explanation:"溫馨提醒：阿姨記住喔！長皮蛇時千萬不要自己把水泡弄破，也不要亂擦萬金油或草藥，穿寬鬆衣服避免磨擦，傷口才好得快、不留疤喔！" },
+    { question:"陳伯伯發現自己鼻尖上長了皮蛇的水泡，這時候他除了看皮膚科，還應該趕快去看哪一科？", options:["眼科，因為病毒可能會跑去傷害到眼睛","骨科，檢查是不是骨頭在痛","不必看其他科，等它自己好、多喝熱水就行了"], correct_answer:"眼科，因為病毒可能會跑去傷害到眼睛", explanation:"溫馨提醒：伯伯要注意喔！如果皮蛇長在鼻尖或眼睛附近，很容易會影響到視力，一定要趕快去看眼科醫生檢查，保護好我們的眼睛！" },
+    { question:"隔壁的張大叔懷疑自己長了皮蛇，想要趕快好起來。關於吃抗病毒藥的時間，哪一個說法才是正確的？", options:["越早吃越有效，最好在疹子出現三天內趕快看醫生服藥","等水泡全部結痂、皮蛇長滿一圈之後再吃藥最有效","藥物沒什麼用，去廟裡找人斬蛇敷草藥最快好"], correct_answer:"越早吃越有效，最好在疹子出現三天內趕快看醫生服藥", explanation:"溫馨提醒：大叔，長皮蛇要趕快看醫生！在起疹子的三天內提早吃抗病毒藥，效果最好，不但能縮短病程，還能減輕痛楚喔！" },
+    { question:"王大嬸聽說長皮蛇痛起來要人命，想要好好預防。請問平時要怎麼做，才能最好地預防皮蛇發作？", options:["飲食正常、睡眠充足、養成固定運動習慣來增強免疫力","天天吃大補湯跟辛辣食物，喝酒來活絡筋骨","關在家裡不曬太陽、不運動，只吃補藥"], correct_answer:"飲食正常、睡眠充足、養成固定運動習慣來增強免疫力", explanation:"安心叮嚀：沒錯！預防皮蛇最好的方法就是增強自己的抵抗力。平常吃得營養、睡得飽、多散步運動，身體強壯了，病毒自然就不敢作怪囉！" },
+  ]},
+  { quizTitle:"居家用電防火安全", category:"營養健康", questions:[
+    { question:"陳伯伯家裡的延長線已經插了電視和電鍋，如果再把微波爐和電熱水瓶全部插上去同時用，會發生什麼危險呢？", options:["電線容易過熱起火，非常危險","電器會自動省電，不用擔心","只會讓家裡的電費變便宜而已"], correct_answer:"電線容易過熱起火，非常危險", explanation:"安心叮嚀：陳伯伯，延長線如果插太多電器同時開，電線很容易因為負載過重而太熱起火！常用的高電量電器，最好分開插在牆壁插座上喔！" },
+    { question:"林阿姨覺得電風扇的電線太長，想要用繩子把電線緊緊綑綁、折起來收納，請問這樣做對嗎？", options:["不對，電線彎折或壓扁容易短路起火","對，這樣看起來整齊又比較安全","對，把電線折起來可以省電"], correct_answer:"不對，電線彎折或壓扁容易短路起火", explanation:"溫馨提醒：林阿姨，電線如果折到或綁太緊，裡面的線路容易受損短路。我們順順地收好、定期檢查有沒有破損，這樣最安全！" },
+    { question:"冬天寒流來，張伯伯把電暖器拿出來取暖，請問電暖器旁邊不可以放什麼東西，才不會引起火災？", options:["衣服、棉被等容易燒起來的物品","鐵製的泡茶桌子","不鏽鋼保溫杯"], correct_answer:"衣服、棉被等容易燒起來的物品", explanation:"安心叮嚀：張伯伯，電暖器和烘衣機的溫度很高，旁邊千萬不要烘衣服或放棉被，要跟可燃物保持距離，冬天才能暖和又平安喔！" },
+    { question:"王大姐想買一台新的電熱水瓶，在挑選電器時，要認明哪一個安全標章，用起來才最安心？", options:["BSMI安全標章","優良食品標章","環保回收標章"], correct_answer:"BSMI安全標章", explanation:"溫馨提醒：王大姐，買電器一定要認明「BSMI安全標章」，這代表有通過國家安全檢驗，品質有保證，我們用起來才真正放心！" },
+  ]},
+  { quizTitle:"預防中暑（一）", category:"營養健康", questions:[
+    { question:"75歲的陳伯伯夏天怕中暑，他應該怎麼喝水才最健康呢？", options:["等口渴了，再一口氣喝一大杯冰紅茶","每小時固定補充約100到200cc的白開水，不要等口渴才喝","用濃茶或熱咖啡代替白開水，多喝茶才能消暑解渴"], correct_answer:"每小時固定補充約100到200cc的白開水，不要等口渴才喝", explanation:"溫馨提醒：阿伯，夏天流汗多，每小時記得喝一兩口水，不要等口渴才喝，而且喝白開水最好，不要用濃茶或含糖飲料代替喔！" },
+    { question:"有高血壓的林阿姨想知道自己的血壓穩不穩定，她應該怎麼量血壓最正確？", options:["身體覺得頭暈時，才趕快拿血壓計量一次就好","記住722原則：連續量7天，每天早晚各量2次，每次量2遍取平均值","一個月只要隨便挑一天，中午吃飽飯後量一次就可以了"], correct_answer:"記住722原則：連續量7天，每天早晚各量2次，每次量2遍取平均值", explanation:"安心叮嚀：林阿姨，記住「722」這個口訣，連續量七天，早晚都要量，這樣才能幫醫生準確掌握您的血壓狀況喔！" },
+    { question:"隔壁的張大伯夏天想要出門散步、買菜，他應該選擇哪一個時間出門比較安全，不容易中暑？", options:["中午12點太陽最大的時候，當作曬太陽消毒","上午10點到下午2點之間，這時候最熱最熱的時候","清晨或是傍晚比較涼爽的時候，並戴上遮陽帽或撐傘"], correct_answer:"清晨或是傍晚比較涼爽的時候，並戴上遮陽帽或撐傘", explanation:"溫馨提醒：張大伯，中午10點到下午2點太陽最毒辣，這時候最好待在室內，等清晨或傍晚涼快一點再出門，記得戴帽子撐傘喔！" },
+    { question:"天氣好熱，李奶奶一個人在家開冷氣，怎樣吹冷氣既舒服又安全呢？", options:["冷氣溫度設定在26到28度，搭配電風扇，並記得定時開窗通風","把冷氣開到最強的18度，而且把門窗全部封死，絕對不開窗","為了省電，絕對不開冷氣，只用扇子拼命搧風"], correct_answer:"冷氣溫度設定在26到28度，搭配電風扇，並記得定時開窗通風", explanation:"安心叮嚀：李奶奶，冷氣開在26到28度最剛好，配上電風扇就很涼快，也要記得稍微開個窗戶讓新鮮空氣流進來喔！" },
+    { question:"王大媽夏天吃三高的藥，發現自己最近流汗變少、有點頭暈，她應該怎麼辦？", options:["覺得是藥物害的，自己馬上把藥停掉不吃","聽鄰居介紹，改吃隔壁中藥房配的消暑草藥","不自己亂停藥，先記錄不舒服的症狀，然後趕快去看醫生討論"], correct_answer:"不自己亂停藥，先記錄不舒服的症狀，然後趕快去看醫生討論", explanation:"溫馨提醒：王大媽，有些三高的藥確實會影響排汗，但千萬不能自己隨便停藥喔！要把不舒服記下來，趕快請醫生幫忙調整才安全。" },
+  ]},
+  { quizTitle:"預防中暑（二）", category:"營養健康", questions:[
+    { question:"陳伯伯想要出門散步運動，但夏天太陽好大。請問陳伯伯應該避開哪一個最熱的時間段，才不會中暑？", options:["上午 10 點到下午 2 點","清晨 5 點到 7 點","晚上 7 點到 9 點"], correct_answer:"上午 10 點到下午 2 點", explanation:"溫馨提醒：對啊！上午10點到下午2點是太陽最烈、最毒的時候，這段時間我們乖乖待在室內吹風扇，等傍晚涼一點再出門散步喔！" },
+    { question:"林阿姨聽說夏天要多補充水分。請問林阿姨應該怎麼喝水，才是預防中暑的正確方法？", options:["等口渴得不得了，再一口氣灌一大杯冰水","隨身帶白開水，不管渴不渴，每小時喝點涼水","喝冰涼的含糖紅茶或啤酒來消暑"], correct_answer:"隨身帶白開水，不管渴不渴，每小時喝點涼水", explanation:"溫馨提醒：阿姨做得真棒！不要等到口渴才喝水，每個小時喝點溫涼的白開水，這樣身體才不會缺水，也比較不會胃痛喔！" },
+    { question:"王大姐準備跟朋友去公園健走，想要做好防曬。請問王大姐穿戴哪一種衣物最能幫忙防曬和散熱？", options:["穿厚實緊身的深色衣服，把皮膚包得緊緊的","穿輕便、淺色、寬鬆的衣服，並戴上寬邊遮陽帽","穿黑色防風外套，出門前一秒鐘再塗防曬乳"], correct_answer:"穿輕便、淺色、寬鬆的衣服，並戴上寬邊遮陽帽", explanation:"安心叮嚀：沒錯！穿淺色、寬鬆透氣的衣服，再戴頂大帽子，不僅舒服，身體也比較容易散熱，出門前30分鐘記得先擦防曬喔！" },
+    { question:"李伯伯在菜園忙完，覺得身體怪怪的。請問下面哪一個是中暑初期的身體警訊，要特別注意？", options:["身體感覺很熱、皮膚乾乾紅紅的、心跳加快","身體一直發冷、流鼻水、一直打噴嚏","肚子非常餓、一直想吃甜食"], correct_answer:"身體感覺很熱、皮膚乾乾紅紅的、心跳加快", explanation:"溫馨提醒：伯伯要注意喔！如果覺得身體發熱、皮膚乾紅、心跳變快，這就是中暑的警訊，要趕快到陰涼的地方休息、喝水。" },
+    { question:"張阿姨看到鄰居在路邊好像快中暑了，頭暈暈的。請問這時候張阿姨第一步應該怎麼幫忙他比較好？", options:["拿厚棉被把他緊緊包起來，逼他流汗","趕快扶他到陰涼的地方，幫他鬆脫衣物並用水擦身體散熱","馬上餵他吃退燒藥和一整大碗冰塊"], correct_answer:"趕快扶他到陰涼的地方，幫他鬆脫衣物並用水擦身體散熱", explanation:"安心叮嚀：您真熱心！遇到有人快中暑，第一時間要先移到陰涼處，幫忙把衣服解開，用濕毛巾擦擦身體、搧搧風，這樣散熱最快、最安全！" },
+  ]},
+  { quizTitle:"登革熱防治", category:"營養健康", questions:[
+    { question:"陳伯伯家裡有澆花用的儲水桶，為了不讓蚊子在裡面生孑孓，應該要怎麼照顧比較好？", options:["每兩個月洗一次，平常蓋子打開通風","每週刷洗換水，不用時要把桶子倒過來放","只要水看起來乾淨，就完全不用換水"], correct_answer:"每週刷洗換水，不用時要把桶子倒過來放", explanation:"溫馨提醒：對啊！儲水桶要每禮拜刷洗換水，沒用時倒過來放，蚊子才沒有機會在裡面產卵生小蚊子喔！" },
+    { question:"隔壁林阿姨聽說最近登革熱很流行，她下午想去公園樹蔭下散步，請問幾點是斑蚊咬人的高峰期，最好避開呢？", options:["下午 4 點到 5 點","中午 12 點到 1 點","晚上 9 點到 10 點"], correct_answer:"下午 4 點到 5 點", explanation:"溫馨提醒：沒錯！早上 9 到 10 點、下午 4 到 5 點是斑蚊最活躍的時候，這段時間盡量避免去樹蔭或草叢逗留喔！" },
+    { question:"王大爺準備出門去菜園，為了不被登革熱蚊子叮，他應該怎麼穿衣服、做防護比較安全？", options:["穿深黑色長袖，什麼都不用擦","穿短袖短褲，皮膚塗抹萬金油","穿淡色長袖衣褲，並在皮膚露出來的地方塗防蚊液"], correct_answer:"穿淡色長袖衣褲，並在皮膚露出來的地方塗防蚊液", explanation:"安心叮嚀：答對了！出門穿上淡色的長袖衣褲，並塗抹防蚊液，蚊子就不容易盯上我們，身體也更安全喔！" },
+    { question:"廖大姐習慣在客廳沙發睡午覺，為了不讓蚊子趁睡著時叮咬，她可以怎麼做最安全？", options:["睡覺時把電風扇關掉，窗戶全部打開","掛起蚊帳來睡覺，減少被叮咬的機會","身上蓋滿厚棉被，把頭悶在裡面睡"], correct_answer:"掛起蚊帳來睡覺，減少被叮咬的機會", explanation:"溫馨提醒：真聰明！午睡時掛個蚊帳，就像幫自己蓋了一個安全的防蚊防護罩，能睡得又香又安心！" },
+  ]},
+  { quizTitle:"三高慢性病自我照護常識（一）", category:"營養健康", questions:[
+    { question:"陳伯伯每天早上都有乖乖量血壓和血糖，量完之後他應該怎麼做，對看醫生最有幫助呢？", options:["記在腦袋裡就好，不用特別寫下來","用筆記本或手機記下來，看醫生的時候拿給醫生看","數值很好的時候才記，不好的時候就假裝沒看到"], correct_answer:"用筆記本或手機記下來，看醫生的時候拿給醫生看", explanation:"溫馨提醒：對啊！把每天量的數字記下來，看醫生的時候拿給醫生參考，這樣醫生才能幫我們調整最適合的藥量喔！" },
+    { question:"林阿姨有高血脂，今天晚上想自己煮晚餐，請問她選擇哪一種煮法最健康、最符合「少油」的原則呢？", options:["炸得酥酥脆脆的炸豬排","加很多太白粉勾芡的羹湯","清蒸魚或是水煮青菜"], correct_answer:"清蒸魚或是水煮青菜", explanation:"溫馨提醒：沒錯！多用清蒸、水煮或涼拌，少吃油炸和勾芡食物，肚子才不會累積太多壞油，身體更輕鬆！" },
+    { question:"張大伯今天早上量血壓，發現血壓很正常，身體也沒什麼不舒服，這時候他可以自己決定不吃藥嗎？", options:["不行喔，要繼續規律吃藥，隨便停藥很危險","可以啊，血壓正常就代表病好了，不用再吃藥","可以自己把藥量減半，這樣比較不傷身體"], correct_answer:"不行喔，要繼續規律吃藥，隨便停藥很危險", explanation:"安心叮嚀：千萬不能自己停藥或減藥喔！血壓穩定是因為藥物在發揮保護作用，擅自停藥可能會讓血壓突然飆高，非常危險。" },
+    { question:"王阿嬤聽說多喝水對身體好，如果醫生沒有限制她喝水，她應該怎麼喝水才最正確呢？", options:["等覺得很渴很渴的時候，再一次灌一大杯冰水","用甜甜的冬瓜茶或果汁來代替白開水","定時、分很多次慢慢喝溫開水"], correct_answer:"定時、分很多次慢慢喝溫開水", explanation:"溫馨提醒：阿嬤真棒！沒事多喝溫開水，定時、多次慢慢喝，不要等到口渴才喝，也千萬不要用含糖飲料代替開水喔！" },
+    { question:"李大姐在拌麵的時候，想要吃得比較健康、少鹽少糖，她應該少放哪一種調味料或配料呢？", options:["沙茶醬或豆瓣醬","新鮮的蔥花與蒜頭","川燙過的綠色蔬菜"], correct_answer:"沙茶醬或豆瓣醬", explanation:"安心叮嚀：對喔！沙茶醬、豆瓣醬這些加工醬料鹽分和油分都比較高，少放一點，多吃蔬菜，身體才不會有負擔！" },
+  ]},
+  { quizTitle:"三高慢性病自我照護常識（二）", category:"營養健康", questions:[
+    { question:"陳伯伯患有高血壓，這幾天量血壓發現數值都很穩定、甚至有點偏低，他該怎麼做比較安全？", options:["感覺血壓穩了，自己先少吃半顆藥","繼續照醫生交代的規律吃藥，不能自己停藥","把剩下的藥先存起來，等下次身體不舒服時再拿出來吃"], correct_answer:"繼續照醫生交代的規律吃藥，不能自己停藥", explanation:"溫馨提醒：對啊！血壓穩定是因為藥物正在發揮保護作用，如果自己亂停藥，可能會讓血壓突然飆高而發生危險，一定要聽醫生的話按時服藥喔！" },
+    { question:"林阿姨想要控制好血糖和血脂，她在準備三餐時，選擇哪一種煮法和飲食方式最健康？", options:["煮菜多用清蒸、水煮或涼拌，少用沙茶醬和勾芡","多吃加工食品，因為味道比較夠，比較好下飯","每餐都要淋滿豆瓣醬，並且多吃油炸的食物"], correct_answer:"煮菜多用清蒸、水煮或涼拌，少用沙茶醬和勾芡", explanation:"安心叮嚀：阿姨真聰明！做菜多用清蒸、水煮，少加重口味的醬料，多吃富含纖維的蔬果，這樣血管才會乾淨、身體更輕鬆喔！" },
+    { question:"關於日常水分的補充，廖爺爺在沒有醫生特別限制喝水的情況下，怎麼喝才正確？", options:["等感覺到非常口渴的時候，再一口氣灌一大杯冰水","不喜歡喝白開水，所以每天都用含糖飲料來代替水分","平時要定時、分多次補充溫開水，不要等口渴才喝"], correct_answer:"平時要定時、分多次補充溫開水，不要等口渴才喝", explanation:"溫馨提醒：沒錯！不要等口渴才喝水，平時多喝溫開水最好，也不要用含糖飲料代替水分。但要是醫生因為心臟或腎臟關係有交代要限水，就要照醫生的話做喔！" },
+  ]},
+  { quizTitle:"遠離肌少症", category:"營養健康", questions:[
+    { question:"林阿姨想要多補充優質蛋白質來保護肌肉，但她腸胃比較弱，吃哪一種食物既營養又好吸收呢？", options:["豆腐和豆漿等黃豆製品","每天只喝白稀飯配醬瓜","吞大顆的維他命藥丸"], correct_answer:"豆腐和豆漿等黃豆製品", explanation:"溫馨提醒：對呀！豆腐和豆漿含有優質的植物性蛋白質，而且對長輩的腸胃來說非常好吸收，每天吃一點最健康喔！" },
+    { question:"陳伯伯聽說吃蛋白質可以預防肌少症，他為了省麻煩，把一整天要吃的肉和蛋都集中在晚餐一次吃完，這樣做對嗎？", options:["不對，蛋白質應該平均分配在三餐吃，對維持肌肉才比較有幫助","對，只要有吃夠，集中在晚餐一次吃完效果最好","不對，應該全部留在半夜吃宵夜才有用"], correct_answer:"不對，蛋白質應該平均分配在三餐吃，對維持肌肉才比較有幫助", explanation:"溫馨提醒：沒錯喔！把蛋白質平均分配在早餐、午餐和晚餐，身體才能好好吸收，幫我們把肌肉一整天都顧得牢牢的！" },
+    { question:"王大姐每天都有去公園散步，她還想在客廳做些讓肌肉用力的「阻力運動」來防肌少症，哪一種做法安全又適合呢？", options:["挑戰去搬客廳最重的大沙發和冰箱","躺在床上一直睡覺，完全不動","拿裝水的寶特瓶做手部平舉，或坐在穩固椅子上做抬腿動作"], correct_answer:"拿裝水的寶特瓶做手部平舉，或坐在穩固椅子上做抬腿動作", explanation:"溫馨提醒：沒錯！拿著小寶特瓶裝水、或者坐在穩固的椅子上抬抬腿，都是很棒又安全的阻力運動，能讓我們更有力氣喔！" },
+    { question:"吳伯伯想靠曬太陽來補充維生素D、保護肌肉健康，他應該選擇哪一個時間出門曬太陽，陽光最溫和又安全呢？", options:["早上九點前，或者下午四點後","中午十二點到下午兩點，太陽最大的時候","晚上天黑、完全沒有太陽的時候"], correct_answer:"早上九點前，或者下午四點後", explanation:"溫馨提醒：答對了！早上九點前或下午四點後，陽光比較溫和，每天曬個15分鐘，就能幫身體製造維生素D，保護骨骼和肌肉喔！" },
+    { question:"賴阿姨聽鄰居說「多曬太陽可以補充維生素D」，請問維生素D對我們的身體有什麼好處，能幫忙預防肌少症呢？", options:["可以讓人不吃不喝也不會變瘦","有助於肌肉收縮與鈣質吸收，保護肌肉健康","可以讓皮膚變得越來越白皙"], correct_answer:"有助於肌肉收縮與鈣質吸收，保護肌肉健康", explanation:"溫馨提醒：對的！維生素D就像是肌肉和骨骼的守護神，能幫忙吸收鈣質、讓肌肉好好收縮，是預防肌少症的大功臣喔！" },
+  ]},
+  { quizTitle:"高齡反詐騙宣導（假檢警、假投資與猜猜我是誰）二", category:"營養健康", questions:[
+    { question:"陳伯伯接到自稱是警察的電話，說他涉嫌洗錢，要他把存摺密碼交出來保管。陳伯伯該怎麼辦？", options:["這是騙人的！警察絕對不會在電話中要求監管帳戶，趕快掛斷。","趕快配合，把密碼告訴警察，免得被警察抓走。","自己偷偷把錢領出來，藏在房間的衣櫃裡。"], correct_answer:"這是騙人的！警察絕對不會在電話中要求監管帳戶，趕快掛斷。", explanation:"溫馨提醒：對啊！真正的警察或檢察官絕對不會用電話辦案，更不會叫您交出存摺或密碼。聽到「監管帳戶」就是詐騙，千萬別上當喔！" },
+    { question:"林阿姨接到一通電話，對方聲音很像她兒子，說換了新手機號碼，而且現在急需借十萬塊周轉。林阿姨第一步該怎麼做？", options:["救急如救火，趕快照著新號碼的主人指示去銀行匯款。","先掛斷電話，用兒子原本的舊電話打過去，或者向其他家人打聽查證。","買一堆遊戲點數，把密碼拍照傳過去給對方。"], correct_answer:"先掛斷電話，用兒子原本的舊電話打過去，或者向其他家人打聽查證。", explanation:"溫馨提醒：沒錯！接到自稱親戚朋友急著借錢的電話，一定要先掛斷，用「原本的舊號碼」打回去確認，才不會把辛苦錢送給騙子喔！" },
+    { question:"隔壁的張大伯拉著王媽媽，說加入了一個手機投資群組，裡面的人說有「穩賺不賠、高收益零風險」的好康，要王媽媽趕快匯款到一個私人帳戶。王媽媽該怎麼想？", options:["世界上哪有穩賺不賠的事？這一定是詐騙陷阱，絕對不匯款。","機會難得，趕快把退休金全部領出來跟著張大伯一起投資。","先匯一半的錢試試看，如果有賺到錢再匯另一半。"], correct_answer:"世界上哪有穩賺不賠的事？這一定是詐騙陷阱，絕對不匯款。", explanation:"溫馨提醒：世界上絕對沒有「穩賺不賠」或「零風險」的投資。只要叫您匯款到私人帳戶的，都是詐騙集團，千萬不要相信喔！" },
+    { question:"謝奶奶接到一通奇奇怪怪、聽起來很可疑的電話，心裡七上八下的。她應該牢記哪三個防詐步驟來保護自己？", options:["一聽、二掛、三查證。","一哭、二鬧、三上吊。","一信、二匯、三等待。"], correct_answer:"一聽、二掛、三查證。", explanation:"安心叮嚀：沒錯！遇到可疑電話，第一要冷靜聽，第二趕快掛斷，第三向親友或打電話查證。記住這三步驟，騙子就拿我們沒辦法囉！" },
+    { question:"劉伯伯接到自稱是醫院的電話，說他的健保卡被盜刷。劉伯伯覺得很懷疑，他可以撥打哪一個電話專線求助，或者找誰幫忙？", options:["撥打 165 反詐騙諮詢專線，或者走路去問里長、派出所。","撥打 119 叫救護車來家裡幫忙查案。","撥打電話給算命老師，問看看今天是不是有破財運。"], correct_answer:"撥打 165 反詐騙諮詢專線，或者走路去問里長、派出所。", explanation:"溫馨提醒：劉伯伯真聰明！遇到任何可疑的電話，隨時撥打 165 反詐騙專線，或者找熟識的里長、附近派出所警察幫忙，大家都會熱心幫您確認喔！" },
+  ]},
+  { quizTitle:"林阿姨的用藥健康大考驗", category:"營養健康", questions:[
+    { question:"林阿姨今天感冒吃藥，手邊有很多飲料，她應該用哪一種來配藥最安全呢？", options:["早晨剛煮好、放涼的自來溫開水","大嫂推薦的消暑新鮮葡萄柚汁","剛沖好、香味撲鼻的熱濃茶"], correct_answer:"早晨剛煮好、放涼的自來溫開水", explanation:"溫馨提醒：對囉！吃藥一定要配溫開水最好！茶、葡萄柚汁或咖啡等飲料，很容易與藥物打架、產生不良毒素或引發頭暈，影響身體健康喔！" },
+    { question:"隔壁王伯伯熱情推薦他吃的高血壓「祖傳特效中藥秘方」，林阿姨該怎麼做？", options:["既然是鄰居好心推薦，先吃幾顆試看看效果","感謝王伯伯，但決定不亂吃偏方，看病只吃自己醫生的合格處方藥","把王伯伯的藥拿來跟自己的心律藥混在一起吃"], correct_answer:"感謝王伯伯，但決定不亂吃偏方，看病只吃自己醫生的合格處方藥", explanation:"安心叮嚀：沒錯！每個人的身體狀況都不同，吃別人的偏方或來路不明的中藥，非常容易傷肝傷腎！遵循專業合格醫生的指示用藥最安心喔！" },
+    { question:"林阿姨看過三個不同學科的門診，領了好多藥包，她看診時最重要的動作是什麼？", options:["放在藥袋裡完全不看，全部混在一起大口吞下去","回家自己當醫生把重複的藥丸挑掉","主動出示「用藥紀錄卡」或先前領取的藥袋，給各科醫師確認"], correct_answer:"主動出示「用藥紀錄卡」或先前領取的藥袋，給各科醫師確認", explanation:"溫馨提醒：太棒了！看診時出示「用藥紀錄卡」，可以讓醫師清清楚楚知道您正在吃什麼藥，才不會重複開藥，保護您的腸胃與心臟！" },
+  ]},
+  { quizTitle:"陳伯伯「不倒翁」防跌落生活大考驗", category:"居家安全", questions:[
+    { question:"陳伯伯半夜起床想去尿尿，他應該怎麼樣起床最不容易跌倒呢？", options:["一聽到尿急，立刻翻身跳下床奔去廁所","遵守「慢、穩、停」：在床邊坐1-2分鐘站穩，不暈了再走","在黑暗中不開燈走去廁所，免得眼睛被強光照得不舒服"], correct_answer:"遵守「慢、穩、停」：在床邊坐1-2分鐘站穩，不暈了再走", explanation:"安心叮嚀：答對了！長輩半夜起身常會因為血壓變化感到頭暈，在床邊坐一下、站好扶穩再走，能有效防範跌倒，保護龍體健康！" },
+    { question:"關於陳伯伯在客廳與浴室走路的安全，哪一樣環境設計是「最危險」的？", options:["浴室鋪設防滑墊、加裝扶手，並把多餘電線收納整齊","在客廳地板鋪滿沒固定好的小踩腳墊、地板留有一灘水","客廳走道空曠、光線充足，不堆放小凳子"], correct_answer:"在客廳地板鋪滿沒固定好的小踩腳墊、地板留有一灘水", explanation:"溫馨提醒：答對了！沒固定的小腳踏墊和地上一灘水是長輩滑倒與絆倒的超大兇手！應隨時擦乾並排除地板雜物，才能走得安穩！" },
+    { question:"陳伯伯出門散步想挑選鞋子，哪一雙鞋最適合預防走路滑倒？", options:["鞋底下完全平滑、沒什麼刻紋的輕巧皮鞋","大小剛剛好、鞋底富有防滑凹凸紋路的防滑鞋","稍微寬鬆、穿脫方便且鞋口很軟的休閒棉拖鞋"], correct_answer:"大小剛剛好、鞋底富有防滑凹凸紋路的防滑鞋", explanation:"安心叮嚀：非常棒！防滑功能好的厚鞋底，以及包覆穩固的包鞋，最能支撐腳部走路。拖鞋或平滑便鞋容易讓人滑步或被絆倒喔！" },
+  ]},
 ];
 
+// 展平成單一陣列，並附帶來源主題
+const ALL_QUESTIONS = QUIZ_SETS.flatMap(set =>
+  set.questions.map(q => ({ ...q, _quizTitle: set.quizTitle, _category: set.category }))
+);
+
 const QUESTIONS_PER_GAME = 5;
-const TOTAL_TIME = 20;
+const TOTAL_TIME = 30;
 
 function shuffle(a) {
   const b = [...a];
@@ -64,6 +130,7 @@ function pickQ() {
     opts: q.options,
     ans: q.options.indexOf(q.correct_answer),
     explanation: q.explanation,
+    category: q._category,
   }));
 }
 
@@ -111,11 +178,11 @@ function useAudio() {
 }
 
 const S = {
-  page:    { minHeight:"100vh", background:"linear-gradient(160deg,#FFF8ED 0%,#FEF3C7 100%)", display:"flex", flexDirection:"column", alignItems:"center", padding:"28px 16px" },
-  card:    { background:"#fff", borderRadius:"22px", padding:"24px 20px", maxWidth:"520px", width:"100%", boxShadow:"0 6px 24px rgba(0,0,0,0.09)" },
-  btn:     (extra={}) => ({ border:"none", borderRadius:"16px", cursor:"pointer", fontWeight:"800", transition:"all 0.15s", ...extra }),
-  label:   { fontSize:"22px", fontWeight:"700", color:"#78350F" },
-  muted:   { fontSize:"18px", color:"#92400E", fontWeight:"600" },
+  page:  { minHeight:"100vh", background:"linear-gradient(160deg,#FFF8ED 0%,#FEF3C7 100%)", display:"flex", flexDirection:"column", alignItems:"center", padding:"28px 16px" },
+  card:  { background:"#fff", borderRadius:"22px", padding:"24px 20px", maxWidth:"520px", width:"100%", boxShadow:"0 6px 24px rgba(0,0,0,0.09)" },
+  btn:   (x={}) => ({ border:"none", borderRadius:"16px", cursor:"pointer", fontWeight:"800", transition:"all 0.15s", ...x }),
+  label: { fontSize:"22px", fontWeight:"700", color:"#78350F" },
+  muted: { fontSize:"18px", color:"#92400E", fontWeight:"600" },
 };
 
 function SpeakBtn({ text, speak, stop, speaking }) {
@@ -127,6 +194,78 @@ function SpeakBtn({ text, speak, stop, speaking }) {
   );
 }
 
+// ── Mascot (SVG brain character) ──
+function BrainFace({ size = 140 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="brainGrad" cx="35%" cy="28%" r="80%">
+          <stop offset="0%" stopColor="#FFD9E8" />
+          <stop offset="100%" stopColor="#F9A8C9" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="100" cy="186" rx="58" ry="8" fill="#9D4F73" opacity="0.18" />
+      <circle cx="55" cy="55" r="26" fill="url(#brainGrad)" />
+      <circle cx="100" cy="38" r="30" fill="url(#brainGrad)" />
+      <circle cx="145" cy="55" r="26" fill="url(#brainGrad)" />
+      <circle cx="38" cy="95" r="24" fill="url(#brainGrad)" />
+      <circle cx="162" cy="95" r="24" fill="url(#brainGrad)" />
+      <path d="M100 30 C 152 30, 176 66, 174 108 C 172 156, 142 182, 100 182 C 58 182, 28 156, 26 108 C 24 66, 48 30, 100 30 Z"
+        fill="url(#brainGrad)" stroke="#D6427B" strokeWidth="3" />
+      <path d="M100 38 C 96 70, 104 110, 100 175" fill="none" stroke="#E287AC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M70 45 Q80 65 65 85" fill="none" stroke="#E287AC" strokeWidth="3" strokeLinecap="round" />
+      <path d="M130 45 Q120 65 135 85" fill="none" stroke="#E287AC" strokeWidth="3" strokeLinecap="round" />
+      <path d="M30 120 Q10 130 14 150" fill="none" stroke="#C97A53" strokeWidth="10" strokeLinecap="round" />
+      <circle cx="13" cy="153" r="9" fill="#E8A678" />
+      <path d="M170 120 Q190 132 184 150" fill="none" stroke="#C97A53" strokeWidth="10" strokeLinecap="round" />
+      <circle cx="184" cy="153" r="9" fill="#E8A678" />
+      <path d="M55 118 Q35 100 38 75" fill="none" stroke="#C97A53" strokeWidth="10" strokeLinecap="round" />
+      <circle cx="38" cy="70" r="10" fill="#E8A678" />
+      <rect x="33" y="50" width="10" height="22" rx="5" fill="#E8A678" />
+      <circle cx="74" cy="108" r="24" fill="#FFFDF9" stroke="#2B2B2B" strokeWidth="5" />
+      <circle cx="126" cy="108" r="24" fill="#FFFDF9" stroke="#2B2B2B" strokeWidth="5" />
+      <line x1="98" y1="106" x2="102" y2="106" stroke="#2B2B2B" strokeWidth="5" />
+      <line x1="50" y1="102" x2="38" y2="96" stroke="#2B2B2B" strokeWidth="5" strokeLinecap="round" />
+      <line x1="150" y1="102" x2="162" y2="96" stroke="#2B2B2B" strokeWidth="5" strokeLinecap="round" />
+      <circle cx="74" cy="109" r="7" fill="#2B2B2B" />
+      <circle cx="126" cy="109" r="7" fill="#2B2B2B" />
+      <circle cx="76.5" cy="106.5" r="2.3" fill="#fff" />
+      <circle cx="128.5" cy="106.5" r="2.3" fill="#fff" />
+      <path d="M62 86 Q74 80 86 86" fill="none" stroke="#B5577F" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M114 86 Q126 80 138 86" fill="none" stroke="#B5577F" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M78 142 Q100 165 122 142 Q112 156 100 156 Q88 156 78 142 Z" fill="#7A1F3D" />
+      <path d="M84 144 Q100 150 116 144" fill="none" stroke="#fff" strokeWidth="5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function Mascot({ size = 160 }) {
+  return (
+    <div style={{ position: "relative", width: size, height: size * 1.15, display: "flex", justifyContent: "center" }}>
+      <svg width={size * 0.6} height={size * 0.4} viewBox="0 0 120 80" style={{ position: "absolute", top: 0, zIndex: 2 }}>
+        <defs>
+          <linearGradient id="crownGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FDE68A" />
+            <stop offset="100%" stopColor="#F59E0B" />
+          </linearGradient>
+        </defs>
+        <path d="M10 70 L10 35 L30 50 L60 15 L90 50 L110 35 L110 70 Z" fill="url(#crownGrad)" stroke="#B45309" strokeWidth="3" strokeLinejoin="round" />
+        <circle cx="10" cy="32" r="7" fill="#FDE68A" stroke="#B45309" strokeWidth="2.5" />
+        <circle cx="60" cy="12" r="8" fill="#FDE68A" stroke="#B45309" strokeWidth="2.5" />
+        <circle cx="110" cy="32" r="7" fill="#FDE68A" stroke="#B45309" strokeWidth="2.5" />
+        <path d="M58 28 l4 8 l8 1 l-6 6 l1 8 l-7 -4 l-7 4 l1 -8 l-6 -6 l8 -1 Z" fill="#fff" opacity="0.85" />
+      </svg>
+      <div style={{ position: "relative", top: size * 0.22, zIndex: 1 }}>
+        <BrainFace size={size} />
+      </div>
+    </div>
+  );
+}
+
+function MascotMini({ size = 44 }) {
+  return <BrainFace size={size} />;
+}
+
 // ════════════════════════════════════════════ HOME
 function HomePage({ onStart }) {
   const [name, setName] = useState("");
@@ -135,9 +274,13 @@ function HomePage({ onStart }) {
   return (
     <div style={S.page}>
       <div style={{ textAlign:"center", marginBottom:"24px" }}>
-        <div style={{ fontSize:"64px" }}>🧠</div>
+        <div style={{ display:"flex", justifyContent:"center", marginBottom:"4px" }}>
+          <Mascot size={140} />
+        </div>
         <h1 style={{ fontSize:"36px", fontWeight:"900", color:"#D97706", margin:"6px 0 8px", letterSpacing:"2px" }}>健康防詐金頭腦</h1>
-        <p style={{ ...S.muted, marginBottom:"14px" }}>動動腦、顧健康、不上當！</p>
+        <p style={{ fontSize:"17px", color:"#92400E", fontWeight:"600", lineHeight:"1.7", maxWidth:"380px", margin:"0 auto 14px" }}>
+          將專業衛教、居家安全、生活通識轉化為生活化、幽默親切的長輩趣味益智遊戲
+        </p>
         {tts.supported && (
           <button onClick={() => tts.speak("歡迎來到健康防詐金頭腦！請輸入您的姓名，然後按下開始挑戰！")}
             style={S.btn({ background:"#FEF3C7", color:"#92400E", padding:"10px 22px", fontSize:"18px", border:"2px solid #F59E0B" })}>
@@ -152,20 +295,14 @@ function HomePage({ onStart }) {
           style={{ width:"100%", height:"62px", fontSize:"22px", border:"2px solid #F59E0B", borderRadius:"14px", padding:"0 18px", outline:"none", color:"#78350F", background:"#FFFBF0", boxSizing:"border-box" }} />
       </div>
 
-      <div style={{ maxWidth:"520px", width:"100%", display:"grid", gridTemplateColumns:"1fr 1fr", gap:"14px", marginBottom:"18px" }}>
-        {[["🏥","健康保養知識","學正確的養生方法"],["🚨","生活防詐實戰","識破常見詐騙手法"]].map(([icon,title,sub],i) => (
-          <div key={i} style={{ background:"#fff", borderRadius:"18px", padding:"18px 14px", textAlign:"center", boxShadow:"0 3px 14px rgba(0,0,0,0.08)", border:"2px solid #FCD34D" }}>
-            <div style={{ fontSize:"38px", marginBottom:"6px" }}>{icon}</div>
-            <div style={{ fontSize:"18px", fontWeight:"800", color:"#78350F", marginBottom:"4px" }}>{title}</div>
-            <div style={{ fontSize:"14px", color:"#92400E", fontWeight:"600" }}>{sub}</div>
-          </div>
-        ))}
-      </div>
-
       <div style={{ maxWidth:"520px", width:"100%", background:"#FEF3C7", borderRadius:"14px", padding:"13px 18px", marginBottom:"20px", display:"flex", justifyContent:"space-around", flexWrap:"wrap", gap:"6px", ...S.muted }}>
         <span>🎯 每次 {QUESTIONS_PER_GAME} 題</span>
         <span>🔀 隨機抽題</span>
         <span>⏱️ 每題 {TOTAL_TIME} 秒</span>
+      </div>
+
+      <div style={{ maxWidth:"520px", width:"100%", textAlign:"center", marginBottom:"18px" }}>
+        <p style={{ fontSize:"15px", color:"#A78BFA", fontWeight:"600" }}>📚 題庫涵蓋：防詐騙�、用藥安全、三高照護、防跌、防中暑、食品安全、居家用電等 {ALL_QUESTIONS.length} 道生活題目</p>
       </div>
 
       <div style={{ maxWidth:"520px", width:"100%" }}>
@@ -236,13 +373,15 @@ function QuizPage({ name, questions, onFinish }) {
   function optBorder(i) { if (!confirmed) return selected===i?"3px solid #F59E0B":"2px solid #FCD34D"; if (i===cur.ans) return "3px solid #10B981"; if (i===selected) return "3px solid #EF4444"; return "2px solid #E5E7EB"; }
   function optIcon(i) { if (!confirmed) return null; if (i===cur.ans) return "✅"; if (i===selected&&selected!==cur.ans) return "❌"; return null; }
 
-  const tc = timeLeft>10?"#10B981":timeLeft>5?"#F59E0B":"#EF4444";
+  const tc = timeLeft > 15 ? "#10B981" : timeLeft > 7 ? "#F59E0B" : "#EF4444";
   const fullText = `第${qIdx+1}題。${cur.q}　選項：${cur.opts.map((o,i)=>`${String.fromCharCode(65+i)}，${o}`).join("。")}`;
 
   return (
     <div style={S.page}>
       <div style={{ maxWidth:"540px", width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"12px" }}>
-        <div style={{ fontSize:"19px", fontWeight:"800", color:"#D97706" }}>🧠 健康防詐金頭腦</div>
+        <div style={{ display:"flex", alignItems:"center", gap:"8px", fontSize:"19px", fontWeight:"800", color:"#D97706" }}>
+          <MascotMini size={36} /> 健康防詐金頭腦
+        </div>
         <div style={{ fontSize:"19px", fontWeight:"700", color:"#92400E", background:"#FEF3C7", borderRadius:"12px", padding:"6px 14px" }}>第 {qIdx+1} / {questions.length} 題</div>
       </div>
 
@@ -251,7 +390,7 @@ function QuizPage({ name, questions, onFinish }) {
       </div>
 
       <div style={{ ...S.card, marginBottom:"12px" }}>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"14px" }}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"10px" }}>
           <div style={{ width:"56px", height:"56px", borderRadius:"50%", background:"#FEF3C7", border:`4px solid ${tc}`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
             <span style={{ fontSize:"21px", fontWeight:"900", color:tc, lineHeight:1 }}>{timeLeft}</span>
             <span style={{ fontSize:"11px", color:"#92400E", fontWeight:"600" }}>秒</span>
@@ -263,6 +402,7 @@ function QuizPage({ name, questions, onFinish }) {
             </div>
           )}
         </div>
+        {cur.category && <p style={{ fontSize:"14px", color:"#A78BFA", fontWeight:"700", marginBottom:"4px" }}>📂 {cur.category}</p>}
         {name && <p style={{ fontSize:"17px", color:"#A78BFA", fontWeight:"600", marginBottom:"6px" }}>👤 {name}，加油！</p>}
         <p style={{ fontSize:"22px", fontWeight:"800", color:"#78350F", lineHeight:"1.65" }}>{qIdx+1}. {cur.q}</p>
       </div>
@@ -316,10 +456,10 @@ function ResultPage({ name, scores, onRestart }) {
   const total = scores.length;
   const pct = Math.round((correct / total) * 100);
   const grade = pct >= 80
-    ? { label:"超級厲害！", icon:"🏆", color:"#D97706", msg:"您的健康防詐知識非常豐富，請繼續保持！" }
+    ? { label:"超級厲害！", color:"#D97706", msg:"您的健康防詐知識非常豐富，請繼續保持！" }
     : pct >= 60
-    ? { label:"答得不錯！", icon:"🌟", color:"#059669", msg:"再多練習幾次，您會更厲害的！" }
-    : { label:"繼續加油！", icon:"💪", color:"#7C3AED", msg:"別氣餒，多玩幾次就會越來越熟悉！" };
+    ? { label:"答得不錯！", color:"#059669", msg:"再多練習幾次，您會更厲害的！" }
+    : { label:"繼續加油！", color:"#7C3AED", msg:"別氣餒，多玩幾次就會越來越熟悉！" };
   const tts = useTTS();
 
   useEffect(() => {
@@ -329,17 +469,18 @@ function ResultPage({ name, scores, onRestart }) {
   return (
     <div style={{ ...S.page, justifyContent:"center" }}>
       <div style={{ ...S.card, maxWidth:"500px", textAlign:"center" }}>
-        <div style={{ fontSize:"76px", marginBottom:"10px" }}>{grade.icon}</div>
+        <div style={{ display:"flex", justifyContent:"center", marginBottom:"4px" }}><MascotMini size={64} /></div>
         <h2 style={{ fontSize:"32px", fontWeight:"900", color:grade.color, marginBottom:"6px" }}>{grade.label}</h2>
         {name && <p style={{ fontSize:"22px", color:"#78350F", fontWeight:"700", marginBottom:"4px" }}>{name}，辛苦了！</p>}
         <p style={{ ...S.muted, marginBottom:"22px" }}>{grade.msg}</p>
 
         <div style={{ background:"linear-gradient(135deg,#FEF3C7,#FDE68A)", borderRadius:"22px", padding:"22px", marginBottom:"20px" }}>
-          <p style={{ ...S.muted, marginBottom:"8px" }}>🧠 健康防詐金頭腦</p>
+          <p style={{ ...S.muted, marginBottom:"8px" }}>健康防詐金頭腦</p>
           <p style={{ fontSize:"56px", fontWeight:"900", color:"#D97706", lineHeight:1, marginBottom:"4px" }}>
             {correct} <span style={{ fontSize:"26px" }}>/ {total}</span>
           </p>
           <p style={{ fontSize:"24px", color:"#92400E", fontWeight:"700", marginBottom:"14px" }}>答對率 {pct}%</p>
+
           <div style={{ display:"flex", justifyContent:"center", gap:"10px", flexWrap:"wrap", marginBottom:"14px" }}>
             {scores.map((ok,i) => (
               <div key={i} style={{ width:"42px", height:"42px", borderRadius:"50%", background:ok?"#D1FAE5":"#FEE2E2", border:`3px solid ${ok?"#10B981":"#EF4444"}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"18px", fontWeight:"900", color:ok?"#065F46":"#991B1B" }}>
@@ -347,6 +488,7 @@ function ResultPage({ name, scores, onRestart }) {
               </div>
             ))}
           </div>
+
           {tts.supported && (
             <button onClick={() => tts.speak(`您答對了${correct}題，答對率${pct}%，${grade.label}`)}
               style={S.btn({ background:"#F59E0B", color:"#fff", padding:"10px 22px", fontSize:"17px" })}>
